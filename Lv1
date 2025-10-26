@@ -1,0 +1,10 @@
+package main
+
+import"fmt"
+
+func main(){
+  const var pi float32 =3.14
+  r:=5
+  fmt.Printf("area = %v",pi*r*r)
+}
+  
