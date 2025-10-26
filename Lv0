@@ -1,5 +1,5 @@
 package main
 
 func main(){
-  print("Hello world!!!")
+  print("Hello ‘学姐’，我是神魔明灭，发传单那个 :D ")
 }
