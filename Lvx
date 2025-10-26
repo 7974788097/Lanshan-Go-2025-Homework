@@ -1,0 +1,33 @@
+package main
+
+import"fmt"
+
+func main() {
+	var input int
+	count := 0
+	sum := 0
+	for {
+		print("请输入一个整数（输入0结束）：")
+		_._=fmt.Scanf("%d", &input)
+		if input == 0 {
+			break
+		}
+		sum += input
+		count++
+	}
+	avg := average(sum, count)
+	fmt.Printf("平均成绩为%.2f,成绩", avg)
+	if avg >= 60 {
+		fmt.Print("合格")
+	} else {
+		fmt.Print("不合格")
+	}
+}
+
+func average(s int, c int) float64 {
+	if c == 0 {
+		return float64(s)
+	} else {
+		return float64(s) / float64(c)
+	}
+}
