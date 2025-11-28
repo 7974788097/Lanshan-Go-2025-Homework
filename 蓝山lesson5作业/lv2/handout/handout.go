@@ -5,7 +5,6 @@ import (
 	"sync"
 )
 
-// Control 线程开启，关闭，锁，线程数量,任务数量
 type Control struct {
 	Lock       sync.Mutex
 	wg         sync.WaitGroup
