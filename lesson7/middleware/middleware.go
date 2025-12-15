@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"moddle/dao"
 	"net/http"
 	"strconv"
 	"strings"
@@ -37,13 +36,14 @@ func JudgeToken() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		if _, exist := dao.Database[username]; !exist {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"message": "Username not exist",
-			})
-			c.Abort()
-			return
-		}
+
+		//if _, exist := dao.Database[username]; !exist {
+		//	c.JSON(http.StatusUnauthorized, gin.H{
+		//		"message": "Username not exist",
+		//	})
+		//	c.Abort()
+		//	return
+		//}
 		c.Set("username", username)
 		c.Next()
 	}

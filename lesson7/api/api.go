@@ -19,19 +19,19 @@ func Register(c *gin.Context) {
 			"message": "bad request",
 		})
 	}
-	// 如果用户存在，这里这种是用户名可以一致的，即只要密码不一致就视为不同用户
-	if er := dao.FindUser(req.Username, req.Password); er != 1 {
+	//确认用户不存在
+	if dao.FindUser(req.Username) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "user already exists",
 		})
 		return
 	}
-	err := dao.AddUser(req.Username, req.Password)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Database Update error",
-		})
-	}
+	dao.AddUser(req.Username, req.Password)
+	//if err != nil {
+	//	c.JSON(http.StatusInternalServerError, gin.H{
+	//		"message": "Database Update error",
+	//	})
+	//}
 	c.JSON(http.StatusOK, gin.H{
 		"message": "register success",
 	})
@@ -57,13 +57,13 @@ func UpdatePassword(c *gin.Context) {
 		})
 		return
 	}
-	err := dao.UpdatePassword(req.Username, req.Newpassword)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"messgae": "Database Update error",
-		})
-		return
-	}
+	dao.UpdatePassword(req.Username, req.Newpassword)
+	//if err != nil {
+	//	c.JSON(http.StatusInternalServerError, gin.H{
+	//		"messgae": "Database Update error",
+	//	})
+	//	return
+	//}
 	c.JSON(http.StatusOK, gin.H{
 		"message": "update success",
 	})
@@ -78,17 +78,17 @@ func Login(c *gin.Context) {
 		return
 	}
 	// 检查用户是否存在且密码是否正确
-	er := dao.FindUser(req.Username, req.Password)
-	if er == 1 {
+	if !dao.FindUser(req.Username) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "user not found",
 		})
 		return
 	}
-	if er == 2 {
+	if !dao.JudgePassword(req.Username, req.Password) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "wrong password",
 		})
+		return
 	}
 
 	// 生成jwt token

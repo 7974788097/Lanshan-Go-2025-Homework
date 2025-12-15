@@ -6,9 +6,6 @@ import (
 )
 
 func main() {
-	err := dao.ReadFile()
-	if err != nil {
-		panic(err)
-	}
+	dao.ConnectDatabase()
 	api.InitRouter_gin()
 }
