@@ -1,0 +1,5 @@
+redis:
+  addr: "localhost:6379"
+  password: "123456"
+mysql:
+  path: "root:123456@tcp(127.0.0.1:3306)/Users?charset=utf8mb4&parseTime=True&loc=Local"
