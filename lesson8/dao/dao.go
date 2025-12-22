@@ -12,22 +12,26 @@ import (
 var db *gorm.DB
 
 func ConnectDatabase() {
-	cfg := getInformation()
+	cfg := getInformationAboutDatabase()
 	connectMySQL(cfg.Mysql.Path)
 	connectRedis(cfg.Redis.Addr, cfg.Redis.Password)
 }
-
+func DeleteUserFromRedis(username string) {
+	ctx := context.Background()
+	cli.Del(ctx, username)
+}
 func AddUserIntoMySQL(username string, password string) {
 	add := &model.User{Username: username, Password: password}
 	db.Create(add)
 }
-func AddUserIntoRedis(username string, password string) {
+func AddUserIntoRedis(username string, password string, time time.Duration) {
 	ctx := context.Background()
-	cli.SetEx(ctx, username, password, 20*time.Minute)
+	DeleteUserFromRedis(username)
+	cli.SetEx(ctx, username, password, time)
 }
 func AddUser(user *model.User) {
 	AddUserIntoMySQL(user.Username, user.Password)
-	AddUserIntoRedis(user.Username, user.Password)
+	AddUserIntoRedis(user.Username, user.Password, 20*time.Second)
 }
 
 // 判断用户名是否存在
@@ -42,22 +46,30 @@ func FindUserFromMySQL(username string) bool {
 	}
 	return true
 }
-func FindUserFromRedis(username string) bool {
+func FindUserFromRedis(username string) error {
 	ctx := context.Background()
-	_, err := cli.Get(ctx, username).Result()
+	name, err := cli.Get(ctx, username).Result()
 	if err != nil {
-		return false
+		AddUserIntoRedis(username, "", 5*time.Minute)
+		return model.NoUser
 	}
-	return true
+	if name == "" {
+		return model.RepetionLogin
+	}
+	return nil
 }
 
 func FindUserFromDatabase(username string) bool {
-	if FindUserFromRedis(username) {
+	err := FindUserFromRedis(username)
+	if err == nil {
 		return true
+	}
+	if errors.Is(err, model.RepetionLogin) {
+		return false
 	}
 	if FindUserFromMySQL(username) {
 		password := GetPasswordFromMySQl(username)
-		AddUserIntoRedis(username, password)
+		AddUserIntoRedis(username, password, 20*time.Second)
 		return true
 	}
 	return false
@@ -108,6 +120,11 @@ func updatePasswordFromRedis(username string, password string) {
 	cli.SetEx(ctx, username, password, 20*time.Minute)
 }
 func UpdatePassword(username string, password string) {
-	updatePasswordFromRedis(username, password)
 	updatePasswordFromMySQL(username, password)
+	updatePasswordFromRedis(username, password)
 }
+
+//代办：
+//1.对各部分数据库操作添加日志记录
+//2.将GetPasswordFromRedis的错误处理细致化
+//3.

@@ -12,7 +12,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func getInformation() *model.DatabaseInformation {
+func getInformationAboutDatabase() *model.DatabaseInformation {
 	file, err := os.Open("./config/config.yaml")
 	if err != nil {
 		panic(err)

@@ -68,6 +68,7 @@ func Login(c *gin.Context) {
 	}
 	// 检查用户是否存在且密码是否正确
 	if !dao.FindUserFromDatabase(req.Username) {
+		dao.AddUserIntoRedis(req.Username, "", 5*time.Second)
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "user not found",
 		})
