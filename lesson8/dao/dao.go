@@ -3,9 +3,11 @@ package dao
 import (
 	"context"
 	"errors"
+	"log"
 	"moddle/model"
 	"time"
 
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
@@ -93,13 +95,13 @@ func GetPasswordFromMySQl(username string) string {
 func GetPasswordFromRedis(username string) (string, bool) {
 	ctx := context.Background()
 	password, err := cli.Get(ctx, username).Result()
-	var bo bool
-	if err != nil {
-		bo = true
-	} else {
-		bo = false
+	if err == nil {
+		return password, true
 	}
-	return password, bo
+	if !errors.Is(err, redis.Nil) {
+		log.Println(err)
+	}
+	return "", false
 }
 func GetPasswordFromDatabase(username string) string {
 	password, exist := GetPasswordFromRedis(username)
@@ -126,5 +128,4 @@ func UpdatePassword(username string, password string) {
 
 //代办：
 //1.对各部分数据库操作添加日志记录
-//2.将GetPasswordFromRedis的错误处理细致化
-//3.
+//2.尝试将token头通过调用jwt包生成并进行简单加密
