@@ -125,7 +125,20 @@ func UpdatePassword(username string, password string) {
 	updatePasswordFromMySQL(username, password)
 	updatePasswordFromRedis(username, password)
 }
-
-//代办：
-//1.对各部分数据库操作添加日志记录
-//2.尝试将token头通过调用jwt包生成并进行简单加密
+func DelectUserFromMySQL(username string) bool {
+	var user model.User
+	result := db.Where("username = ?", username).Delete(&user)
+	if result.RowsAffected == 0 {
+		return false
+	}
+	return true
+}
+func DelectUserFromRedis(username string) {
+	ctx := context.Background()
+	cli.SetEx(ctx, username, "", 20*time.Minute)
+}
+func DelectUserFromDatabase(username string) bool {
+	bo := DelectUserFromMySQL(username)
+	DelectUserFromRedis(username)
+	return bo
+}

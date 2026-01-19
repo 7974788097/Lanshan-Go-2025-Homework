@@ -1,17 +1,22 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-func ping(w http.ResponseWriter, r *http.Request) {
-	_, _ = w.Write([]byte("pong"))
-}
-
 func ping1(c *gin.Context) {
+	name, exist := c.Get("username")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "username is nil",
+		})
+		return
+	}
+	information := fmt.Sprintf("pong %s", name)
 	c.JSON(http.StatusOK, gin.H{
-		"message": "pong",
+		"message": information,
 	})
 }

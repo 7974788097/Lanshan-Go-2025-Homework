@@ -81,7 +81,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	// 生成jwt token
+	// 生成jwt token,
 	token, err := utils.MakeToken(req.Username, time.Now().Add(10*time.Minute))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -95,13 +95,31 @@ func Login(c *gin.Context) {
 		"token":   token,
 	})
 }
+func delect(c *gin.Context) {
+	var req model.User
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "bad request",
+		})
+	}
+	mysqlSuccess := dao.DelectUserFromDatabase(req.Username)
+	if !mysqlSuccess {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "user not found",
+		})
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "success",
+		})
+	}
+}
 func InitRouter_gin() {
 	r := gin.Default()
-	r.GET("/ping", middleware.JudgeToken(), middleware.Example2(), ping1)
+	r.GET("/ping", middleware.JudgeToken(), ping1)
 	r.POST("/login", Login)
 	r.POST("/register", Register)
 	r.POST("/updatepassword", middleware.JudgeToken(), UpdatePassword)
-	r.POST("/delete")
+	r.POST("/delete", delect)
 
 	_ = r.Run(":8080")
 }
