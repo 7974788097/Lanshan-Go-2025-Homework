@@ -121,5 +121,5 @@ a_pile_of_shit/
 | 方法   | 接口              | 用处     | 传入参数                                             | 补充                                          |
 |------|-----------------|--------|--------------------------------------------------|---------------------------------------------|
 | POST | /comment/set    | 添加评论   | Token,comment_content,message_id,parent_node_id  | parent_node_id和message_id只能且必须传入一个作为父节点     |
-| GET  | /comment/get    | 获取评论信息 | Token，get_way,comment_id,message_id,conment_path | 根据get_way选择获取评论的方式                          |
+| GET  | /comment/get    | 获取评论信息 | Token，get_way,comment_id,message_id,comment_path | 根据get_way选择获取评论的方式                          |
 | POST | /comment/delete | 删除评论   | Token,comment_path                               | 将所删除的评论对应的path传回，如果删除的文章，将文章id转16进制作为path即可 |
