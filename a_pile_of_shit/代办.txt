@@ -1,5 +1,0 @@
-必做：
-    1：优化错误处理逻辑，使用errors.Join统计错误，并在service层处理
-    2：重构db的连接池，汇总于datamanage和uaermanage中
-    3：防刷机制
-    n：生成镜像时配置系统时间
