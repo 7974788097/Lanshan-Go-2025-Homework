@@ -76,9 +76,6 @@ func AgentStreamChat(ctx context.Context, message []*schema.Message, Agent *reac
 	go func() {
 		for {
 			select {
-			//case <-time.After(outTime):
-			//	cancel()
-			//	return
 			case <-timer.C:
 				cancel()
 				return
