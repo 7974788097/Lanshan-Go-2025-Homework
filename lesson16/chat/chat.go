@@ -72,16 +72,21 @@ func AgentStreamChat(ctx context.Context, message []*schema.Message, Agent *reac
 		default:
 		}
 	}
+	timer := time.NewTimer(outTime)
 	go func() {
 		for {
 			select {
-			case <-time.After(outTime):
+			//case <-time.After(outTime):
+			//	cancel()
+			//	return
+			case <-timer.C:
 				cancel()
 				return
 			case <-timeCtx.Done():
 				return
 			case <-resetChan:
 			}
+			timer.Reset(outTime)
 		}
 	}()
 	go func() {
